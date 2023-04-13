@@ -34,3 +34,14 @@ def create_enemy_spawner(world:esper.World, level_data:dict):
     spawner_entity = world.create_entity()
     world.add_component(spawner_entity,
                         CEnemySpawner(level_data["enemy_spawn_events"]))
+    
+def create_player_square(world:esper.World, player_info:dict, player_lvl_info:dict):
+    size = pygame.Vector2(player_info["size"]["x"],
+                            player_info["size"]["y"])
+    color = pygame.Color(player_info["color"]["r"],
+                            player_info["color"]["g"],
+                            player_info["color"]["b"])
+    pos = pygame.Vector2(player_lvl_info["position"]["x"] - size.x / 2,
+                            player_lvl_info["position"]["y"] - size.y / 2)
+    vel = pygame.Vector2(0, 0)
+    create_square(world, size, pos, vel, color)
