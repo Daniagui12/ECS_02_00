@@ -1,5 +1,5 @@
 {
-    "player_spawn_events": {
+    "player_spawn": {
         "position": {
             "x": 320,
             "y": 180
