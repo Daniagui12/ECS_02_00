@@ -65,6 +65,7 @@ def create_bullet_square(world:esper.World, pos: pygame.Vector2, bullet_info:dic
     vel = normalized * bullet_info["velocity"]
     bullet_entity = create_square(world, size, pos, vel, color)
     world.add_component(bullet_entity, CTagBullet())
+    return bullet_entity
 
 def create_input_player(world:esper.World):
     input_left = world.create_entity()

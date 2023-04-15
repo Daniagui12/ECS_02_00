@@ -5,6 +5,7 @@ from src.ecs.components.c_input_command import CInputCommand, CommandPhase
 from src.ecs.components.c_surface import CSurface
 from src.ecs.components.c_transform import CTransform
 from src.ecs.components.c_velocity import CVelocity
+from src.ecs.systems.s_colission_bullet_enemy import system_collision_bullet_enemy
 from src.ecs.systems.s_colission_player_enemy import system_collision_player_enemy
 from src.ecs.systems.s_player_screen_collision import system_player_screen_limit
 from src.ecs.systems.s_enemy_spawner import system_enemy_spawner
@@ -25,7 +26,7 @@ class GameEngine:
         self.screen = pygame.display.set_mode(
             (self.window_cfg["size"]["w"], self.window_cfg["size"]["h"]), 
             pygame.SCALED)
-
+        self._bullet_entity = None
         self.clock = pygame.time.Clock()
         self.is_running = False
         self.framerate = self.window_cfg["framerate"]
@@ -80,6 +81,7 @@ class GameEngine:
         system_screen_bounce(self.ecs_world, self.screen)
         system_collision_player_enemy(self.ecs_world, self._player_entity, self.level_01_cfg)
         system_player_screen_limit(self.ecs_world, self.screen)
+        system_collision_bullet_enemy(self.ecs_world, self._bullet_entity)
         self.ecs_world._clear_dead_entities()
 
     def _draw(self):
@@ -123,7 +125,7 @@ class GameEngine:
                 size = self._player_c_s.surf.get_size()
                 center = pygame.Vector2(pos.x + size[0] / 2, pos.y + size[1] / 2)
                 direction = pygame.Vector2(c_input.pos[0], c_input.pos[1])
-                create_bullet_square(self.ecs_world, center, self.bullets_cfg, direction)
+                self._bullet_entity = create_bullet_square(self.ecs_world, center, self.bullets_cfg, direction)
                 
 
     
