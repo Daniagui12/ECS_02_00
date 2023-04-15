@@ -4,6 +4,7 @@ import esper
 from src.ecs.components.c_input_command import CInputCommand, CommandPhase
 from src.ecs.components.c_velocity import CVelocity
 from src.ecs.systems.s_colission_player_enemy import system_collision_player_enemy
+from src.ecs.systems.s_player_screen_collision import system_player_screen_limit
 from src.ecs.systems.s_enemy_spawner import system_enemy_spawner
 from src.ecs.systems.s_input_player import system_input_player
 
@@ -73,6 +74,7 @@ class GameEngine:
         system_movement(self.ecs_world, self.delta_time)
         system_screen_bounce(self.ecs_world, self.screen)
         system_collision_player_enemy(self.ecs_world, self._player_entity, self.level_01_cfg)
+        system_player_screen_limit(self.ecs_world, self.screen)
         self.ecs_world._clear_dead_entities()
 
     def _draw(self):
