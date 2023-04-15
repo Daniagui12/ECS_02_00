@@ -2,6 +2,8 @@ import json
 import pygame
 import esper
 from src.ecs.components.c_input_command import CInputCommand, CommandPhase
+from src.ecs.components.c_surface import CSurface
+from src.ecs.components.c_transform import CTransform
 from src.ecs.components.c_velocity import CVelocity
 from src.ecs.systems.s_colission_player_enemy import system_collision_player_enemy
 from src.ecs.systems.s_player_screen_collision import system_player_screen_limit
@@ -12,7 +14,7 @@ from src.ecs.systems.s_movement import system_movement
 from src.ecs.systems.s_rendering import system_rendering
 from src.ecs.systems.s_screen_bounce import system_screen_bounce
 
-from src.create.prefab_creator import create_enemy_spawner, create_input_player, create_player_square
+from src.create.prefab_creator import create_bullet_square, create_enemy_spawner, create_input_player, create_player_square
 
 class GameEngine:
     def __init__(self) -> None:
@@ -42,6 +44,8 @@ class GameEngine:
             self.level_01_cfg = json.load(level_01_file)
         with open("assets/cfg/player.json") as player_file:
             self.player_cfg = json.load(player_file)
+        with open("assets/cfg/bullet.json") as bullets_file:
+            self.bullets_cfg = json.load(bullets_file)
 
     def run(self) -> None:
         self._create()
@@ -56,6 +60,7 @@ class GameEngine:
     def _create(self):
         self._player_entity = create_player_square(self.ecs_world, self.player_cfg, self.level_01_cfg["player_spawn"])
         self._player_c_v = self.ecs_world.component_for_entity(self._player_entity, CVelocity)
+        self._player_c_s = self.ecs_world.component_for_entity(self._player_entity, CSurface)
         create_enemy_spawner(self.ecs_world, self.level_01_cfg)
         create_input_player(self.ecs_world)
 
@@ -110,5 +115,14 @@ class GameEngine:
                 self._player_c_v.vel.y += self.player_cfg["input_velocity"]
             elif c_input.phase == CommandPhase.END:
                 self._player_c_v.vel.y -= self.player_cfg["input_velocity"]
+
+        elif c_input.name == "PLAYER_FIRE":
+            if c_input.phase == CommandPhase.START:
+                self._player_c_t = self.ecs_world.component_for_entity(self._player_entity, CTransform)
+                pos = self._player_c_t.pos
+                size = self._player_c_s.surf.get_size()
+                center = pygame.Vector2(pos.x + size[0] / 2, pos.y + size[1] / 2)
+                create_bullet_square(self.ecs_world, center, self.bullets_cfg)
+                
 
     
