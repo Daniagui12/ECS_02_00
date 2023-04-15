@@ -122,7 +122,8 @@ class GameEngine:
                 pos = self._player_c_t.pos
                 size = self._player_c_s.surf.get_size()
                 center = pygame.Vector2(pos.x + size[0] / 2, pos.y + size[1] / 2)
-                create_bullet_square(self.ecs_world, center, self.bullets_cfg)
+                direction = pygame.Vector2(c_input.pos[0], c_input.pos[1])
+                create_bullet_square(self.ecs_world, center, self.bullets_cfg, direction)
                 
 
     
