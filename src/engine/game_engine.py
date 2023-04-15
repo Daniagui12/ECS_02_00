@@ -5,6 +5,7 @@ from src.ecs.components.c_input_command import CInputCommand, CommandPhase
 from src.ecs.components.c_surface import CSurface
 from src.ecs.components.c_transform import CTransform
 from src.ecs.components.c_velocity import CVelocity
+from src.ecs.systems.s_bullet_screen_collision import system_bullet_screen_limit
 from src.ecs.systems.s_colission_bullet_enemy import system_collision_bullet_enemy
 from src.ecs.systems.s_colission_player_enemy import system_collision_player_enemy
 from src.ecs.systems.s_player_screen_collision import system_player_screen_limit
@@ -82,6 +83,7 @@ class GameEngine:
         system_collision_player_enemy(self.ecs_world, self._player_entity, self.level_01_cfg)
         system_player_screen_limit(self.ecs_world, self.screen)
         system_collision_bullet_enemy(self.ecs_world, self._bullet_entity)
+        system_bullet_screen_limit(self.ecs_world, self.screen)
         self.ecs_world._clear_dead_entities()
 
     def _draw(self):
@@ -119,13 +121,14 @@ class GameEngine:
                 self._player_c_v.vel.y -= self.player_cfg["input_velocity"]
 
         elif c_input.name == "PLAYER_FIRE":
-            if c_input.phase == CommandPhase.START:
+            if c_input.phase == CommandPhase.START and self.level_01_cfg["player_spawn"]["max_bullets"] > 0:
                 self._player_c_t = self.ecs_world.component_for_entity(self._player_entity, CTransform)
                 pos = self._player_c_t.pos
                 size = self._player_c_s.surf.get_size()
                 center = pygame.Vector2(pos.x + size[0] / 2, pos.y + size[1] / 2)
                 direction = pygame.Vector2(c_input.pos[0], c_input.pos[1])
                 self._bullet_entity = create_bullet_square(self.ecs_world, center, self.bullets_cfg, direction)
+                self.level_01_cfg["player_spawn"]["max_bullets"] -= 1
                 
 
     
